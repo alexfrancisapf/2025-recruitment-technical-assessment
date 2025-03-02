@@ -8,8 +8,8 @@ function cleanup {
 }
 
 # Creates and activates a virtual env
-python3 -m venv venv
-source venv/bin/activate
+python -m venv venv
+source venv/Scripts/activate
 
 # Install dependencies and runs
 pip install -r requirements.txt

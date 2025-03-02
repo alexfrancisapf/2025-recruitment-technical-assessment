@@ -18,6 +18,16 @@ describe("Task 1", () => {
       expect(response.body).toStrictEqual({ msg: "Alpha Alfredo" });
     });
 
+    it("lead&trail", async () => {
+      const response = await getTask1("This           has no double  spaces");
+      expect(response.body).toStrictEqual({ msg: "This Has No Double Spaces" });
+    });
+
+    it("lead&trail", async () => {
+      const response = await getTask1("       This has no leading or trailing spaces     ");
+      expect(response.body).toStrictEqual({ msg: "This Has No Leading Or Trailing Spaces" });
+    });
+
     it("error case", async () => {
       const response = await getTask1("");
       expect(response.status).toBe(400);
@@ -93,8 +103,49 @@ describe("Task 2", () => {
       });
       expect(resp3.status).toBe(400);
     });
+
+    //self added tests
+    it("requireditems repeat test", async () => {
+      const resp = await putTask2({
+        type: "recipe",
+        name: "yummers",
+        requiredItems: [
+          {
+            "name": "A",
+            "quantity": 1
+          },
+          {
+            "name": "B",
+            "quantity": 1
+          },
+          {
+            "name": "C",
+            "quantity": 2
+          }
+        ],
+      });
+      expect(resp.status).toBe(200);
+
+      const resp2 = await putTask2({
+        type: "recipe",
+        name: "yummers",
+        requiredItems: [
+          {
+            "name": "Egg",
+            "quantity": 1
+          },
+          {
+            "name": "Egg",
+            "quantity": 1
+          }
+        ],
+      });
+      expect(resp2.status).toBe(400);
+    });
   });
 });
+
+
 
 describe("Task 3", () => {
   describe("GET /summary", () => {
