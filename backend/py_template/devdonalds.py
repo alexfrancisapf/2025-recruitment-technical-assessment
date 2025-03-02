@@ -95,23 +95,32 @@ def create_entry():
 @app.route('/summary', methods=['GET'])
 def summary():
 
+	cooktime = 0
+
+	if len(cookbook) == 0:
+		return 'empty mpty mty mt', 400
+
 	name = request.args.get('name')
+	if name not in cookbook:
+		return 'empty emty mty mt', 400
+	
+	if cookbook[name].get('type') == 'ingredient':
+		return 'ingredienta', 400
+
 	item = cookbook[name]
 
 	ingredients = {}
 	ingredientList = []
 
-	recipeRecursion(name, ingredients)
+	if recipeRecursion(name, ingredients, 1) == 0:
+		return 'empty emty mty mt', 400
 
-	for name in ingredients:
-		ingredientList.append
-		({
-			"name": name,
-			"quanity": ingredients[name]
+	for ingName in ingredients:
+		ingredientList.append ({
+			"name": ingName,
+			"quantity": ingredients[ingName]
 		})
-
-		item = cookbook[name]
-		cooktime += item.get('cookTime') * name.value
+		cooktime += cookbook[ingName].get('cookTime') * ingredients[ingName]
 
 	output = {
 		"name": name,
@@ -121,18 +130,27 @@ def summary():
 
 	return output, 200
 
-def recipeRecursion(name, ingredients): 
-	item = cookbook[name]
-	requiredItems = item.get('requiredItems')
+def recipeRecursion(name, ingredients, multiplier):
+	if name not in cookbook:
+		return 0 
 
-	for item in requiredItems:
-		dataType = cookbook[item].get('type')
-		name = item.get('name')
-		if dataType == 'recipe':
-			return recipeRecursion(name, ingredients)
-		else:
-			ingredients[name] += item.get('quantity')
-			return
+	item = cookbook[name]
+
+	if item.get('type') == 'ingredient':
+		if name not in ingredients:
+			ingredients[name] = 0
+		return 1
+	
+	requiredItems = item.get('requiredItems', [])\
+	
+	for reqItem in requiredItems:
+		reqName = reqItem.get('name')
+		if reqName not in cookbook:
+			return 0
+		quantity = reqItem.get('quantity')
+
+		if recipeRecursion(reqName, ingredients, quantity) == 1:
+			ingredients[reqName] += quantity * multiplier	
 	
 # =============================================================================
 # ==== DO NOT TOUCH ===========================================================
